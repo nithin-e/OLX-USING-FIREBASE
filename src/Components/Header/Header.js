@@ -1,12 +1,36 @@
-import React from 'react';
+import React, { useContext } from "react";
+import "./Header.css";
+import OlxLogo from "../../assets/OlxLogo";
+import Search from "../../assets/Search";
+import Arrow from "../../assets/Arrow";
+import SellButton from "../../assets/SellButton";
+import SellButtonPlus from "../../assets/SellButtonPlus";
+import { AuthContext } from "../../store/firebaseContest";
+import { getAuth,signOut } from 'firebase/auth';
+import { FirebaseContext } from '../../store/firebaseContest';
+import { Link, useHistory } from 'react-router-dom';  
 
-import './Header.css';
-import OlxLogo from '../../assets/OlxLogo';
-import Search from '../../assets/Search';
-import Arrow from '../../assets/Arrow';
-import SellButton from '../../assets/SellButton';
-import SellButtonPlus from '../../assets/SellButtonPlus';
+
+
+
 function Header() {
+  const { user } = useContext(AuthContext);
+  const { firebase } = useContext(FirebaseContext);
+  const auth = getAuth(firebase); 
+  const history = useHistory();
+
+  const LOGOUT = () => {
+    signOut(auth)
+      .then(() => {
+        console.log("User signed out successfully");
+        history.push('Login')
+      })
+      .catch((error) => {
+        console.error("Error signing out: ", error.message);
+      });
+  };
+
+
   return (
     <div className="headerParentDiv">
       <div className="headerChildDiv">
@@ -34,10 +58,10 @@ function Header() {
           <Arrow></Arrow>
         </div>
         <div className="loginPage">
-          <span>Login</span>
+          <span>{user ? user.displayName : "Login"}</span>
           <hr />
         </div>
-
+       {user&&<span onClick={LOGOUT}>LOGOUT</span>}
         <div className="sellMenu">
           <SellButton></SellButton>
           <div className="sellMenuContent">
